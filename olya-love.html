@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Для Оли ♥</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose: #e8405a;
+    --blush: #f7b8c4;
+    --deep: #1a0a0f;
+    --cream: #fff5f7;
+    --gold: #d4a0a8;
+  }
+
+  html, body {
+    width: 100%; min-height: 100vh;
+    background: var(--deep);
+    overflow-x: hidden;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--cream);
+  }
+
+  /* ── CANVAS HEARTS ── */
+  #canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
+  }
+
+  /* ── RADIAL GLOW ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(232,64,90,0.18) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0 20px 80px;
+  }
+
+  /* ── BIG HEART ── */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    gap: 0;
+  }
+
+  .big-heart {
+    width: min(300px, 70vw);
+    height: min(300px, 70vw);
+    position: relative;
+    animation: heartbeat 1.4s ease-in-out infinite;
+    cursor: pointer;
+    filter: drop-shadow(0 0 40px rgba(232,64,90,0.7));
+  }
+
+  .big-heart svg {
+    width: 100%; height: 100%;
+  }
+
+  @keyframes heartbeat {
+    0%,100% { transform: scale(1); }
+    14%      { transform: scale(1.12); }
+    28%      { transform: scale(1); }
+    42%      { transform: scale(1.06); }
+    70%      { transform: scale(1); }
+  }
+
+  .big-heart:hover {
+    animation: heartbeat-fast 0.5s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat-fast {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.15); }
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 15vw, 8rem);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    background: linear-gradient(135deg, #fff 0%, var(--blush) 50%, var(--rose) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-top: -20px;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+    font-style: italic;
+    font-weight: 300;
+    color: var(--blush);
+    letter-spacing: 0.2em;
+    margin-top: 12px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.8s forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SCROLL ARROW ── */
+  .scroll-hint {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.5s forwards;
+    color: var(--gold);
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+  }
+
+  .scroll-hint span {
+    display: block;
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollLine 2s ease infinite;
+  }
+
+  @keyframes scrollLine {
+    0%   { transform: scaleY(0); transform-origin: top; }
+    50%  { transform: scaleY(1); transform-origin: top; }
+    51%  { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    width: 100%;
+    max-width: 680px;
+    margin: 60px auto 0;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--rose), transparent);
+  }
+
+  .divider-heart {
+    color: var(--rose);
+    font-size: 1rem;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+  /* ── QUOTE CARDS ── */
+  .quote-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(232,64,90,0.2);
+    border-radius: 16px;
+    padding: clamp(24px, 5vw, 40px);
+    text-align: center;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quote-card::before {
+    content: '"';
+    position: absolute;
+    top: -20px;
+    left: 20px;
+    font-size: 10rem;
+    color: rgba(232,64,90,0.08);
+    font-family: 'Playfair Display', serif;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .quote-text {
+    font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--cream);
+    position: relative;
+    z-index: 1;
+  }
+
+  .quote-author {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    color: var(--rose);
+    text-transform: uppercase;
+  }
+
+  /* ── REASONS LIST ── */
+  .reasons-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    font-style: italic;
+    text-align: center;
+    color: var(--blush);
+    margin-bottom: 28px;
+  }
+
+  .reason-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(232,64,90,0.12);
+  }
+
+  .reason-item:last-child { border-bottom: none; }
+
+  .reason-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-style: italic;
+    color: rgba(232,64,90,0.3);
+    line-height: 1;
+    min-width: 40px;
+    text-align: right;
+  }
+
+  .reason-text {
+    font-size: clamp(0.95rem, 3vw, 1.15rem);
+    font-style: italic;
+    line-height: 1.7;
+    color: var(--cream);
+    padding-top: 6px;
+  }
+
+  /* ── FINAL HEART ── */
+  .final {
+    text-align: center;
+    margin-top: 80px;
+    padding-bottom: 40px;
+  }
+
+  .final-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 7vw, 3.5rem);
+    font-style: italic;
+    background: linear-gradient(135deg, var(--cream), var(--blush), var(--rose));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.3;
+  }
+
+  .mini-hearts {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .mini-heart {
+    font-size: 1.4rem;
+    animation: floatHeart 3s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  .mini-heart:nth-child(2) { animation-delay: 0.3s; }
+  .mini-heart:nth-child(3) { animation-delay: 0.6s; }
+  .mini-heart:nth-child(4) { animation-delay: 0.9s; }
+  .mini-heart:nth-child(5) { animation-delay: 1.2s; }
+
+  @keyframes floatHeart {
+    0%,100% { transform: translateY(0) scale(1); }
+    50%      { transform: translateY(-10px) scale(1.2); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<main>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="big-heart" id="mainHeart">
+      <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="hg" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" stop-color="#ff6b8a"/>
+            <stop offset="60%" stop-color="#e8405a"/>
+            <stop offset="100%" stop-color="#8b1a2a"/>
+          </radialGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <path filter="url(#glow)" fill="url(#hg)"
+          d="M50 85 C50 85 5 55 5 28 C5 14 15 5 27 5 C36 5 44 10 50 18 C56 10 64 5 73 5 C85 5 95 14 95 28 C95 55 50 85 50 85Z"/>
+        <!-- shine -->
+        <path fill="rgba(255,255,255,0.25)" d="M30 14 C30 14 22 20 22 32 C22 34 25 33 26 31 C26 22 32 17 37 16 C39 15 38 13 36 13 Z"/>
+      </svg>
+    </div>
+
+    <h1 class="hero-name">Оля</h1>
+    <p class="hero-sub">ты особенная ♥</p>
+
+    <div class="scroll-hint">
+      <span></span>
+    </div>
+  </div>
+
+  <!-- QUOTE -->
+  <section class="obs">
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-heart">♥</span>
+      <div class="divider-line"></div>
+    </div>
+    <div class="quote-card">
+      <p class="quote-text">
+        В каждом взгляде — маленькое чудо.<br>
+        В каждой улыбке — целый мир.<br>
+        Оля, ты освещаешь всё вокруг себя<br>
+        просто своим присутствием.
+      </p>
+    </div>
+  </section>
+
+  <!-- REASONS -->
+  <section class="obs">
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-heart">♥</span>
+      <div class="divider-line"></div>
+    </div>
+    <p class="reasons-title">Почему ты неповторима</p>
+
+    <div class="reason-item">
+      <span class="reason-num">01</span>
+      <p class="reason-text">Твои глаза — как будто в них спрятаны все звёзды сразу, и смотреть в них можно бесконечно.</p>
+    </div>
+    <div class="reason-item">
+      <span class="reason-num">02</span>
+      <p class="reason-text">Твоя улыбка делает любой пасмурный день ярче. Она настоящая — и именно это так притягивает.</p>
+    </div>
+    <div class="reason-item">
+      <span class="reason-num">03</span>
+      <p class="reason-text">Ты умеешь чувствовать других. Твоя забота — тихая, но её всегда ощущаешь рядом.</p>
+    </div>
+    <div class="reason-item">
+      <span class="reason-num">04</span>
+      <p class="reason-text">Рядом с тобой легко. Не нужно притворяться — можно просто быть собой.</p>
+    </div>
+    <div class="reason-item">
+      <span class="reason-num">05</span>
+      <p class="reason-text">Ты — та самая, которую ищут и не могут найти. А мне повезло.</p>
+    </div>
+  </section>
+
+  <!-- FINAL -->
+  <section class="obs final">
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-heart">♥</span>
+      <div class="divider-line"></div>
+    </div>
+    <p class="final-text">Ты моя любимая,<br>Оля ♥</p>
+    <div class="mini-hearts">
+      <span class="mini-heart">♥</span>
+      <span class="mini-heart">♥</span>
+      <span class="mini-heart">♥</span>
+      <span class="mini-heart">♥</span>
+      <span class="mini-heart">♥</span>
+    </div>
+  </section>
+</main>
+
+<script>
+// ── FLOATING HEARTS CANVAS ──
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let hearts = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function heartPath(ctx, x, y, size) {
+  ctx.beginPath();
+  ctx.moveTo(x, y + size * 0.3);
+  ctx.bezierCurveTo(x, y, x - size * 0.5, y, x - size * 0.5, y + size * 0.3);
+  ctx.bezierCurveTo(x - size * 0.5, y + size * 0.65, x, y + size * 0.9, x, y + size);
+  ctx.bezierCurveTo(x, y + size * 0.9, x + size * 0.5, y + size * 0.65, x + size * 0.5, y + size * 0.3);
+  ctx.bezierCurveTo(x + size * 0.5, y, x, y, x, y + size * 0.3);
+  ctx.closePath();
+}
+
+function spawnHeart() {
+  const size = Math.random() * 14 + 6;
+  hearts.push({
+    x: Math.random() * canvas.width,
+    y: canvas.height + size * 2,
+    size,
+    speed: Math.random() * 0.8 + 0.3,
+    wobble: Math.random() * Math.PI * 2,
+    wobbleSpeed: Math.random() * 0.02 + 0.01,
+    wobbleAmp: Math.random() * 30 + 10,
+    alpha: Math.random() * 0.35 + 0.1,
+    rotation: Math.random() * Math.PI * 2,
+    rotSpeed: (Math.random() - 0.5) * 0.02,
+    hue: Math.random() * 30 - 15 // variation around rose
+  });
+}
+
+let lastSpawn = 0;
+function animate(ts) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (ts - lastSpawn > 300) {
+    spawnHeart();
+    if (Math.random() < 0.4) spawnHeart();
+    lastSpawn = ts;
+  }
+
+  hearts = hearts.filter(h => h.y > -h.size * 3);
+
+  hearts.forEach(h => {
+    h.y -= h.speed;
+    h.wobble += h.wobbleSpeed;
+    h.x += Math.sin(h.wobble) * 0.5;
+    h.rotation += h.rotSpeed;
+
+    ctx.save();
+    ctx.translate(h.x, h.y);
+    ctx.rotate(h.rotation);
+    ctx.globalAlpha = h.alpha;
+    ctx.fillStyle = `hsl(${350 + h.hue}, 75%, 65%)`;
+    heartPath(ctx, -h.size / 2, -h.size / 2, h.size);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+// ── CLICK BURST ──
+document.getElementById('mainHeart').addEventListener('click', () => {
+  for (let i = 0; i < 12; i++) {
+    const h = {
+      x: window.innerWidth / 2 + (Math.random() - 0.5) * 60,
+      y: window.innerHeight * 0.35,
+      size: Math.random() * 18 + 8,
+      speed: Math.random() * 3 + 1.5,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: 0.05,
+      wobbleAmp: 50,
+      alpha: 0.6,
+      rotation: 0,
+      rotSpeed: (Math.random() - 0.5) * 0.05,
+      hue: Math.random() * 40 - 20
+    };
+    hearts.push(h);
+  }
+});
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.obs').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
